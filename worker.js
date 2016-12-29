@@ -5,7 +5,7 @@ math.config({ number: 'BigNumber', precision: 64 });
 onmessage = function(e) {
 	//e.data contains the object posted
 	var data = e.data;
-  var workerResult = mandelbrotRender(data);
+  var workerResult = genericRender(data);
   postMessage({
 		type: 'RENDER',
 		data: workerResult
@@ -67,19 +67,20 @@ function genericRender(options){
 		height: 600,
 		iterations: 100,
 		escape: 2,
-		equation: 'math.chain(Z).pow(2).add(c).done()'
+		equation: 'Z^2+c'
 	}, options);
 	options.zoom = math.bignumber(options.zoom);
 	options.origin = math.complex(options.origin);
 	options.width = math.bignumber(options.width);
 	options.height = math.bignumber(options.height);
+	var expression = math.compile(options.equation);
 	//iterations that it takes to escape are recorded in the result
 	var result = [];
 	var pixelSize = math.chain(options.zoom).divide(options.width).done();
-	for (let yi = 0; yi < options.height; yi++){
+	for (let yi = options.height-1; yi >= 0; yi--){
 		postMessage({
 			type: 'PROGRESS',
-			data: math.divide(yi+1, options.height).toNumber()
+			data: math.divide(options.height-(yi+1), options.height).toNumber()
 		});
 		let y = math.chain(math.bignumber(options.origin.im)).add(math.chain(pixelSize).multiply(options.height).divide(2).done()).subtract(math.chain(pixelSize).multiply(yi).done()).done();
 		let row = [];
@@ -89,7 +90,10 @@ function genericRender(options){
 			let c = math.complex(x, y);
 			let Z = c;
 			for (let i = 0; i < options.iterations; i++){
-				Z = eval(options.equation);
+				Z = expression.eval({
+					Z: Z,
+					c: c
+				});
 				if (Z.abs()>=options.escape){
 					break;
 				}

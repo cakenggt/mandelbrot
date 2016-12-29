@@ -38590,11 +38590,15 @@
 						var row = data[y];
 						for (var x = 0; x < row.length; x++) {
 							var pixel = row[x];
-							var huePercent = pixel / action.data.iterations * 1000;
-							while (huePercent > 1) {
-								huePercent /= 10;
+							if (pixel == action.data.iterations) {
+								rgb = [0, 0, 0];
+							} else {
+								var huePercent = pixel / action.data.iterations * 1000;
+								while (huePercent > 1) {
+									huePercent /= 10;
+								}
+								var rgb = _colorConvert2.default.hsl.rgb(Math.floor(huePercent * 359), 100, 50);
 							}
-							var rgb = _colorConvert2.default.hsl.rgb(Math.floor(huePercent * 359), 100, 50);
 							imageData.data[current * 4] = rgb[0];
 							imageData.data[current * 4 + 1] = rgb[1];
 							imageData.data[current * 4 + 2] = rgb[2];
