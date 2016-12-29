@@ -77,10 +77,10 @@ function genericRender(options){
 	//iterations that it takes to escape are recorded in the result
 	var result = [];
 	var pixelSize = math.chain(options.zoom).divide(options.width).done();
-	for (let yi = options.height-1; yi >= 0; yi--){
+	for (let yi = 0; yi < options.height; yi++){
 		postMessage({
 			type: 'PROGRESS',
-			data: math.divide(options.height-(yi+1), options.height).toNumber()
+			data: math.divide(yi+1, options.height).toNumber()
 		});
 		let y = math.chain(math.bignumber(options.origin.im)).add(math.chain(pixelSize).multiply(options.height).divide(2).done()).subtract(math.chain(pixelSize).multiply(yi).done()).done();
 		let row = [];
