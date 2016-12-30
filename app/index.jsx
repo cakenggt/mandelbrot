@@ -6,11 +6,14 @@ import {Provider, connect} from 'react-redux';
 import {createStore, combineReducers, applyMiddleware} from 'redux';
 import thunk from 'redux-thunk';
 import workerReducer from './reducers/worker-reducer';
-import {postData} from './actionCreators/worker-actions';
+import renderSettingsReducer from './reducers/render-settings-reducer';
+import {startRender} from './actionCreators/worker-actions';
 import addWorkerListeners from './worker-listeners';
+import RenderView from './components/render-view.jsx';
 
 var reducer = combineReducers({
-	worker: workerReducer
+	worker: workerReducer,
+	renderSettings: renderSettingsReducer
 });
 
 var store = createStore(
@@ -28,8 +31,8 @@ var mapStateToProps = state => {
 
 var mapDispatchToProps = dispatch => {
 	return {
-		postData: function (newData) {
-			dispatch(postData(newData));
+		startRender: function (newData) {
+			dispatch(startRender(newData));
 		}
 	};
 };
@@ -45,7 +48,7 @@ var Index = connect(
 	},
 	propTypes: {
 		progress: React.PropTypes.number,
-		postData: React.PropTypes.func
+		startRender: React.PropTypes.func
 	},
 	render: function () {
 		return (
@@ -60,11 +63,7 @@ var Index = connect(
 					>
 					Send
 				</span>
-				<canvas
-					id="canvas"
-					width={400}
-					height={300}
-					/>
+				<RenderView/>
 			</div>
 		);
 	},
@@ -75,7 +74,7 @@ var Index = connect(
 	},
 	handleSendClick: function () {
 		var json = JSON.parse(this.state.data);
-		this.props.postData(json);
+		this.props.startRender(json);
 	}
 }));
 

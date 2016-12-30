@@ -15,15 +15,6 @@ onmessage = function (e) { // eslint-disable-line no-undef
 
 function genericRender(options) {
 	// zoom is how many units can fit in the width
-	options = Object.assign({}, {
-		zoom: 1,
-		origin: '-1.74999841099374081749002483162428393452822172335808534616943930976364725846655540417646727085571962736578151132907961927190726789896685696750162524460775546580822744596887978637416593715319388030232414667046419863755743802804780843375-0.00000000000000165712469295418692325810961981279189026504290127375760405334498110850956047368308707050735960323397389547038231194872482690340369921750514146922400928554011996123112902000856666847088788158433995358406779259404221904755i',
-		width: 400,
-		height: 300,
-		iterations: 100,
-		escape: 2,
-		equation: 'Z^2+c'
-	}, options);
 	options.zoom = math.bignumber(options.zoom);
 	options.origin = math.complex(options.origin);
 	options.width = math.bignumber(options.width);
@@ -55,6 +46,7 @@ function genericRender(options) {
 	}
 	return {
 		iterations: options.iterations,
-		data: result
+		renderedData: result,
+		timestamp: new Date().getTime()
 	};
 }

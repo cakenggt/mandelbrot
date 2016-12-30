@@ -71,16 +71,25 @@
 	
 	var _workerReducer2 = _interopRequireDefault(_workerReducer);
 	
+	var _renderSettingsReducer = __webpack_require__(/*! ./reducers/render-settings-reducer */ 1083);
+	
+	var _renderSettingsReducer2 = _interopRequireDefault(_renderSettingsReducer);
+	
 	var _workerActions = __webpack_require__(/*! ./actionCreators/worker-actions */ 567);
 	
 	var _workerListeners = __webpack_require__(/*! ./worker-listeners */ 568);
 	
 	var _workerListeners2 = _interopRequireDefault(_workerListeners);
 	
+	var _renderView = __webpack_require__(/*! ./components/render-view.jsx */ 1082);
+	
+	var _renderView2 = _interopRequireDefault(_renderView);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var reducer = (0, _redux.combineReducers)({
-		worker: _workerReducer2.default
+		worker: _workerReducer2.default,
+		renderSettings: _renderSettingsReducer2.default
 	}); // eslint-disable-line import/no-unassigned-import
 	
 	
@@ -96,8 +105,8 @@
 	
 	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 		return {
-			postData: function postData(newData) {
-				dispatch((0, _workerActions.postData)(newData));
+			startRender: function startRender(newData) {
+				dispatch((0, _workerActions.startRender)(newData));
 			}
 		};
 	};
@@ -112,7 +121,7 @@
 		},
 		propTypes: {
 			progress: _react2.default.PropTypes.number,
-			postData: _react2.default.PropTypes.func
+			startRender: _react2.default.PropTypes.func
 		},
 		render: function render() {
 			return _react2.default.createElement(
@@ -135,11 +144,7 @@
 					},
 					'Send'
 				),
-				_react2.default.createElement('canvas', {
-					id: 'canvas',
-					width: 400,
-					height: 300
-				})
+				_react2.default.createElement(_renderView2.default, null)
 			);
 		},
 		handleChangeInput: function handleChangeInput(e) {
@@ -149,7 +154,7 @@
 		},
 		handleSendClick: function handleSendClick() {
 			var json = JSON.parse(this.state.data);
-			this.props.postData(json);
+			this.props.startRender(json);
 		}
 	}));
 	
@@ -38557,15 +38562,16 @@
 	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
-	exports.postData = postData;
+	exports.startRender = startRender;
 	var worker = exports.worker = new Worker('/js/worker.js');
 	
-	function postData(data) {
-		return function () {
-			var canvas = document.getElementById('canvas');
-			data.width = canvas.width;
-			data.height = canvas.height;
-			worker.postMessage(data);
+	function startRender(data) {
+		return function (dispatch, getState) {
+			dispatch({
+				type: 'UPDATE_RENDER_SETTINGS',
+				data: data
+			});
+			worker.postMessage(getState().renderSettings);
 		};
 	}
 
@@ -38587,51 +38593,12 @@
 	exports.default = function (dispatch) {
 		_workerActions.worker.onmessage = function (e) {
 			if (_typeof(e.data) === 'object') {
-				var action = e.data;
-				if (action.type === 'RENDER') {
-					var canvas = document.getElementById('canvas');
-					renderCanvas(canvas, action.data);
-				} else {
-					dispatch(e.data);
-				}
+				dispatch(e.data);
 			}
 		};
 	};
 	
-	var _colorConvert = __webpack_require__(/*! color-convert */ 569);
-	
-	var _colorConvert2 = _interopRequireDefault(_colorConvert);
-	
 	var _workerActions = __webpack_require__(/*! ./actionCreators/worker-actions */ 567);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function renderCanvas(canvas, data) {
-		var renderedData = data.data;
-		var ctx = canvas.getContext('2d');
-		var imageData = ctx.createImageData(canvas.width, canvas.height);
-		var current = 0;
-		for (var y = 0; y < renderedData.length; y++) {
-			var row = renderedData[y];
-			for (var x = 0; x < row.length; x++) {
-				var pixel = row[x];
-				var rgb = [0, 0, 0];
-				if (pixel < data.iterations) {
-					var huePercent = pixel;
-					while (huePercent > 1) {
-						huePercent /= 10;
-					}
-					rgb = _colorConvert2.default.hsl.rgb(Math.floor(huePercent * 359), 100, 50);
-				}
-				imageData.data[current * 4] = rgb[0];
-				imageData.data[current * 4 + 1] = rgb[1];
-				imageData.data[current * 4 + 2] = rgb[2];
-				imageData.data[current * 4 + 3] = 255;
-				current++;
-			}
-		}
-		ctx.putImageData(imageData, 0, 0);
-	}
 
 /***/ },
 /* 569 */
@@ -40369,12 +40336,16 @@
 	});
 	
 	exports.default = function () {
-		var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { progress: 0 };
+		var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultState;
 		var action = arguments[1];
 	
 		switch (action.type) {
 			case 'RENDER':
-				return action.data;
+				return Object.assign({}, state, {
+					renderedData: action.data.renderedData,
+					timestamp: action.data.timestamp,
+					iterations: action.data.iterations
+				});
 			case 'PROGRESS':
 				return Object.assign({}, state, {
 					progress: action.data
@@ -40382,6 +40353,139 @@
 			default:
 				return state;
 		}
+	};
+	
+	var defaultState = {
+		progress: 0,
+		renderedData: [],
+		timestamp: 0,
+		iterations: 0
+	};
+
+/***/ },
+/* 1082 */
+/*!****************************************!*\
+  !*** ./app/components/render-view.jsx ***!
+  \****************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _react = __webpack_require__(/*! react */ 298);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _reactRedux = __webpack_require__(/*! react-redux */ 537);
+	
+	var _colorConvert = __webpack_require__(/*! color-convert */ 569);
+	
+	var _colorConvert2 = _interopRequireDefault(_colorConvert);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var RenderView = _react2.default.createClass({
+		displayName: 'RenderView',
+	
+		shouldComponentUpdate: function shouldComponentUpdate(nextProps) {
+			return this.props.timestamp !== nextProps.timestamp;
+		},
+		propTypes: {
+			timestamp: _react2.default.PropTypes.number,
+			renderedData: _react2.default.PropTypes.array,
+			iterations: _react2.default.PropTypes.number,
+			width: _react2.default.PropTypes.number,
+			height: _react2.default.PropTypes.number
+		},
+		render: function render() {
+			if (this.canvas) {
+				var ctx = this.canvas.getContext('2d');
+				this.renderCanvas(ctx);
+			}
+			return _react2.default.createElement('canvas', {
+				ref: this.bindCanvas,
+				width: this.props.width,
+				height: this.props.height
+			});
+		},
+		bindCanvas: function bindCanvas(c) {
+			this.canvas = c;
+		},
+		renderCanvas: function renderCanvas(ctx) {
+			var renderedData = this.props.renderedData;
+			var imageData = ctx.createImageData(this.canvas.width, this.canvas.height);
+			var current = 0;
+			for (var y = 0; y < renderedData.length; y++) {
+				var row = renderedData[y];
+				for (var x = 0; x < row.length; x++) {
+					var pixel = row[x];
+					var rgb = [0, 0, 0];
+					if (pixel < this.props.iterations) {
+						var huePercent = pixel;
+						while (huePercent > 1) {
+							huePercent /= 10;
+						}
+						rgb = _colorConvert2.default.hsl.rgb(Math.floor(huePercent * 359), 100, 50);
+					}
+					imageData.data[current * 4] = rgb[0];
+					imageData.data[current * 4 + 1] = rgb[1];
+					imageData.data[current * 4 + 2] = rgb[2];
+					imageData.data[current * 4 + 3] = 255;
+					current++;
+				}
+			}
+			ctx.putImageData(imageData, 0, 0);
+		}
+	});
+	
+	var mapStateToProps = function mapStateToProps(state) {
+		return {
+			renderedData: state.worker.renderedData,
+			timestamp: state.worker.timestamp,
+			iterations: state.worker.iterations,
+			width: state.renderSettings.width,
+			height: state.renderSettings.height
+		};
+	};
+	
+	exports.default = (0, _reactRedux.connect)(mapStateToProps)(RenderView);
+
+/***/ },
+/* 1083 */
+/*!*************************************************!*\
+  !*** ./app/reducers/render-settings-reducer.js ***!
+  \*************************************************/
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	exports.default = function () {
+		var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultState;
+		var action = arguments[1];
+	
+		switch (action.type) {
+			case 'UPDATE_RENDER_SETTINGS':
+				return Object.assign({}, state, action.data);
+			default:
+				return state;
+		}
+	};
+	
+	var defaultState = {
+		zoom: 1,
+		origin: '-1.74999841099374081749002483162428393452822172335808534616943930976364725846655540417646727085571962736578151132907961927190726789896685696750162524460775546580822744596887978637416593715319388030232414667046419863755743802804780843375-0.00000000000000165712469295418692325810961981279189026504290127375760405334498110850956047368308707050735960323397389547038231194872482690340369921750514146922400928554011996123112902000856666847088788158433995358406779259404221904755i',
+		width: 400,
+		height: 300,
+		iterations: 100,
+		escape: 2,
+		equation: 'Z^2+c'
 	};
 
 /***/ }
