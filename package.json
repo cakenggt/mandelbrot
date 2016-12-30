@@ -22,5 +22,22 @@
     "redux": "^3.6.0",
     "redux-thunk": "^2.1.0",
     "webpack": "^1.13.2"
+  },
+  "devDependencies": {
+    "eslint-config-xo-react": "^0.10.0",
+    "eslint-plugin-react": "^6.8.0",
+    "xo": "^0.17.1"
+  },
+  "xo": {
+    "rules": {
+      "linebreak-style": [
+        "off"
+      ]
+    },
+    "extends": "xo-react",
+    "envs": [
+      "browser",
+      "node"
+    ]
   }
 }

@@ -18,7 +18,6 @@ http.listen(port, function(){
   console.log('Example app listening on port '+port+'!');
 });
 
-
 /*
 * This tells the server to always serve index.html no matter what,
 * excluding the previously defined api routes. This is so we can use

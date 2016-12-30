@@ -3,12 +3,11 @@ var path = require('path');
 
 var BUILD_DIR = path.resolve(__dirname, 'public/js');
 var APP_DIR = path.resolve(__dirname, 'app');
-var WORKER_DIR = path.resolve(__dirname);
 
 var config = {
   entry: {
     bundle: APP_DIR + '/index.jsx',
-    worker: WORKER_DIR + '/worker.js'
+    worker: APP_DIR + '/worker.js'
   },
   output: {
     path: BUILD_DIR,

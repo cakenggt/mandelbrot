@@ -19,7 +19,7 @@ export default function(dispatch, getState){
 							rgb = [0,0,0];
 						}
 						else{
-							var huePercent = pixel/action.data.iterations*1000;
+							var huePercent = pixel;
 							while (huePercent > 1){
 								huePercent /= 10;
 							}
@@ -32,7 +32,6 @@ export default function(dispatch, getState){
 						current++;
 					}
 				}
-				console.log('putting data in image');
 		    ctx.putImageData(imageData, 0, 0);
 			}
 			else{
