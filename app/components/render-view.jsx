@@ -1,6 +1,8 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import colorConvert from 'color-convert';
+import math from 'mathjs';
+import {getPixelSize} from '../../mandelbrot-lib';
 
 var RenderView = React.createClass({
 	shouldComponentUpdate: function (nextProps) {
@@ -11,7 +13,10 @@ var RenderView = React.createClass({
 		renderedData: React.PropTypes.array,
 		iterations: React.PropTypes.number,
 		width: React.PropTypes.number,
-		height: React.PropTypes.number
+		height: React.PropTypes.number,
+		zoom: React.PropTypes.number,
+		origin: React.PropTypes.string,
+		navigate: React.PropTypes.func
 	},
 	render: function () {
 		if (this.canvas) {
@@ -23,6 +28,7 @@ var RenderView = React.createClass({
 				ref={this.bindCanvas}
 				width={this.props.width}
 				height={this.props.height}
+				onClick={this.handleNavigationClick}
 				/>
 		);
 	},
@@ -53,6 +59,18 @@ var RenderView = React.createClass({
 			}
 		}
 		ctx.putImageData(imageData, 0, 0);
+	},
+	handleNavigationClick: function (e) {
+		var x = e.pageX - this.canvas.offsetLeft;
+		var y = e.pageY - this.canvas.offsetTop;
+		var diffX = x - (this.props.width / 2);
+		var diffY = (this.props.height / 2) - y;
+		var pixelSize = getPixelSize(this.props.width, this.props.zoom);
+		var origin = math.complex(this.props.origin);
+		var clickLoc = math.add(origin, math.complex(diffX * pixelSize, diffY * pixelSize));
+		this.props.navigate({
+			origin: clickLoc.toString()
+		});
 	}
 });
 
@@ -61,11 +79,25 @@ var mapStateToProps = state => {
 		renderedData: state.worker.renderedData,
 		timestamp: state.worker.timestamp,
 		iterations: state.worker.iterations,
-		width: state.renderSettings.width,
-		height: state.renderSettings.height
+		width: state.worker.width,
+		height: state.worker.height,
+		zoom: state.worker.zoom,
+		origin: state.worker.origin
+	};
+};
+
+var mapDispatchToProps = dispatch => {
+	return {
+		navigate: function (options) {
+			dispatch({
+				type: 'NAVIGATE',
+				data: options
+			});
+		}
 	};
 };
 
 export default connect(
-	mapStateToProps
+	mapStateToProps,
+	mapDispatchToProps
 )(RenderView);

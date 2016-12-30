@@ -1,6 +1,7 @@
 var math = require('mathjs');
 
 exports.calculateEscape = function (options) {
+	// options.expression must be a compiled math.js expression
 	let iterToEscape = 0;
 	let c = options.c;
 	let Z = options.Z;
@@ -15,4 +16,8 @@ exports.calculateEscape = function (options) {
 		iterToEscape++;
 	}
 	return iterToEscape;
+};
+
+exports.getPixelSize = function (width, zoom) {
+	return math.chain(1).divide(zoom).divide(width).done();
 };

@@ -7,13 +7,16 @@ import {createStore, combineReducers, applyMiddleware} from 'redux';
 import thunk from 'redux-thunk';
 import workerReducer from './reducers/worker-reducer';
 import renderSettingsReducer from './reducers/render-settings-reducer';
-import {startRender} from './actionCreators/worker-actions';
+import navigationReducer from './reducers/navigation-reducer';
 import addWorkerListeners from './worker-listeners';
 import RenderView from './components/render-view.jsx';
+import RenderSettings from './components/render-settings.jsx';
+import NavigationView from './components/navigation-view.jsx';
 
 var reducer = combineReducers({
 	worker: workerReducer,
-	renderSettings: renderSettingsReducer
+	renderSettings: renderSettingsReducer,
+	navigation: navigationReducer
 });
 
 var store = createStore(
@@ -29,52 +32,21 @@ var mapStateToProps = state => {
 	};
 };
 
-var mapDispatchToProps = dispatch => {
-	return {
-		startRender: function (newData) {
-			dispatch(startRender(newData));
-		}
-	};
-};
-
 var Index = connect(
 	mapStateToProps,
-	mapDispatchToProps
 )(React.createClass({
-	getInitialState: function () {
-		return {
-			data: '{}'
-		};
-	},
 	propTypes: {
-		progress: React.PropTypes.number,
-		startRender: React.PropTypes.func
+		progress: React.PropTypes.number
 	},
 	render: function () {
 		return (
 			<div>
 				<div>Progress: {this.props.progress}</div>
-				<input
-					value={this.state.data}
-					onChange={this.handleChangeInput}
-					/>
-				<span
-					onClick={this.handleSendClick}
-					>
-					Send
-				</span>
+				<RenderSettings/>
 				<RenderView/>
+				<NavigationView/>
 			</div>
 		);
-	},
-	handleChangeInput: function (e) {
-		this.setState({
-			data: e.target.value
-		});
-	},
-	handleSendClick: function () {
-		var json = JSON.parse(this.state.data);
-		this.props.startRender(json);
 	}
 }));
 

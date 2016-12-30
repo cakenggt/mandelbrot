@@ -72,40 +72,41 @@
 	
 	function genericRender(options) {
 		// zoom is how many units can fit in the width
-		options.zoom = _mathjs2.default.bignumber(options.zoom);
-		options.origin = _mathjs2.default.complex(options.origin);
-		options.width = _mathjs2.default.bignumber(options.width);
-		options.height = _mathjs2.default.bignumber(options.height);
-		var expression = _mathjs2.default.compile(options.equation);
+		var convertedOptions = Object.assign({}, options, {
+			zoom: _mathjs2.default.bignumber(options.zoom),
+			origin: _mathjs2.default.complex(options.origin),
+			width: _mathjs2.default.bignumber(options.width),
+			height: _mathjs2.default.bignumber(options.height)
+		});
+		var expression = _mathjs2.default.compile(convertedOptions.equation);
 		// iterations that it takes to escape are recorded in the result
 		var result = [];
-		var pixelSize = _mathjs2.default.chain(1).divide(options.zoom).divide(options.width).done();
-		for (var yi = 0; yi < options.height; yi++) {
+		var pixelSize = (0, _mandelbrotLib.getPixelSize)(convertedOptions.zoom, convertedOptions.width);
+		for (var yi = 0; yi < convertedOptions.height; yi++) {
 			postMessage({
 				type: 'PROGRESS',
-				data: _mathjs2.default.divide(yi + 1, options.height).toNumber()
+				data: _mathjs2.default.divide(yi + 1, convertedOptions.height).toNumber()
 			});
-			var y = _mathjs2.default.chain(_mathjs2.default.bignumber(options.origin.im)).add(_mathjs2.default.chain(pixelSize).multiply(options.height).divide(2).done()).subtract(_mathjs2.default.chain(pixelSize).multiply(yi).done()).done();
+			var y = _mathjs2.default.chain(_mathjs2.default.bignumber(convertedOptions.origin.im)).add(_mathjs2.default.chain(pixelSize).multiply(convertedOptions.height).divide(2).done()).subtract(_mathjs2.default.chain(pixelSize).multiply(yi).done()).done();
 			var row = [];
-			for (var xi = 0; xi < options.width; xi++) {
-				var x = _mathjs2.default.chain(_mathjs2.default.bignumber(options.origin.re)).subtract(_mathjs2.default.chain(pixelSize).multiply(options.width).divide(2).done()).add(_mathjs2.default.chain(pixelSize).multiply(xi).done()).done();
+			for (var xi = 0; xi < convertedOptions.width; xi++) {
+				var x = _mathjs2.default.chain(_mathjs2.default.bignumber(convertedOptions.origin.re)).subtract(_mathjs2.default.chain(pixelSize).multiply(convertedOptions.width).divide(2).done()).add(_mathjs2.default.chain(pixelSize).multiply(xi).done()).done();
 				var c = _mathjs2.default.complex(x, y);
 				var Z = c;
 				row.push((0, _mandelbrotLib.calculateEscape)({
 					c: c,
 					Z: Z,
 					expression: expression,
-					escape: options.escape,
-					iterations: options.iterations
+					escape: convertedOptions.escape,
+					iterations: convertedOptions.iterations
 				}));
 			}
 			result.push(row);
 		}
-		return {
-			iterations: options.iterations,
+		return Object.assign({}, options, {
 			renderedData: result,
 			timestamp: new Date().getTime()
-		};
+		});
 	}
 
 /***/ },
@@ -896,6 +897,7 @@
 	var math = __webpack_require__(/*! mathjs */ 574);
 	
 	exports.calculateEscape = function (options) {
+		// options.expression must be a compiled math.js expression
 		let iterToEscape = 0;
 		let c = options.c;
 		let Z = options.Z;
@@ -910,6 +912,10 @@
 			iterToEscape++;
 		}
 		return iterToEscape;
+	};
+	
+	exports.getPixelSize = function (width, zoom) {
+		return math.chain(1).divide(zoom).divide(width).done();
 	};
 
 

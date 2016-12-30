@@ -2,17 +2,17 @@ var defaultState = {
 	progress: 0,
 	renderedData: [],
 	timestamp: 0,
-	iterations: 0
+	iterations: 0,
+	zoom: 0,
+	origin: '0+0i',
+	height: 300,
+	width: 400
 };
 
 export default function (state = defaultState, action) {
 	switch (action.type) {
 		case 'RENDER':
-			return Object.assign({}, state, {
-				renderedData: action.data.renderedData,
-				timestamp: action.data.timestamp,
-				iterations: action.data.iterations
-			});
+			return Object.assign({}, state, action.data);
 		case 'PROGRESS':
 			return Object.assign({}, state, {
 				progress: action.data
