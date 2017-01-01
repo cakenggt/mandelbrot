@@ -12,6 +12,32 @@ export function startRender() {
 			escape: parseFloat(renderSettings.escape),
 			equation: renderSettings.equation
 		};
-		worker.postMessage(renderSettings);
+		worker.postMessage({
+			type: 'SINGLE_FRAME_RENDER',
+			data: renderSettings
+		});
+	};
+}
+
+export function startGifRender() {
+	return function (dispatch, getState) {
+		var state = getState();
+		var renderSettings = state.renderSettings;
+		var gifRenderSettings = state.gifRenderSettings;
+		renderSettings = {
+			origin: renderSettings.origin,
+			zoomFrom: parseFloat(gifRenderSettings.zoomFrom),
+			speed: parseFloat(gifRenderSettings.speed),
+			zoomTo: parseFloat(renderSettings.zoom),
+			width: parseInt(renderSettings.width, 10),
+			height: parseInt(renderSettings.height, 10),
+			iterations: parseInt(renderSettings.iterations, 10),
+			escape: parseFloat(renderSettings.escape),
+			equation: renderSettings.equation
+		};
+		worker.postMessage({
+			type: 'GIF_RENDER',
+			data: renderSettings
+		});
 	};
 }

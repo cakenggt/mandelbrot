@@ -1,8 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import colorConvert from 'color-convert';
 import math from 'mathjs';
-import {getPixelSize} from '../../mandelbrot-lib';
+import {getPixelSize, convertIterationsToRGBA} from '../../mandelbrot-lib';
 
 var RenderView = React.createClass({
 	shouldComponentUpdate: function (nextProps) {
@@ -37,26 +36,10 @@ var RenderView = React.createClass({
 	},
 	renderCanvas: function (ctx) {
 		var renderedData = this.props.renderedData;
+		var rgbaData = convertIterationsToRGBA(renderedData, this.props.iterations);
 		var imageData = ctx.createImageData(this.canvas.width, this.canvas.height);
-		var current = 0;
-		for (var y = 0; y < renderedData.length; y++) {
-			var row = renderedData[y];
-			for (var x = 0; x < row.length; x++) {
-				var pixel = row[x];
-				var rgb = [0, 0, 0];
-				if (pixel < this.props.iterations) {
-					var huePercent = pixel;
-					while (huePercent > 1) {
-						huePercent /= 10;
-					}
-					rgb = colorConvert.hsl.rgb(Math.floor(huePercent * 359), 100, 50);
-				}
-				imageData.data[current * 4] = rgb[0];
-				imageData.data[(current * 4) + 1] = rgb[1];
-				imageData.data[(current * 4) + 2] = rgb[2];
-				imageData.data[(current * 4) + 3] = 255;
-				current++;
-			}
+		for (var i = 0; i < rgbaData.length; i++) {
+			imageData.data[i] = rgbaData[i];
 		}
 		ctx.putImageData(imageData, 0, 0);
 	},

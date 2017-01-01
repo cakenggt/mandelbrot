@@ -8,15 +8,18 @@ import thunk from 'redux-thunk';
 import workerReducer from './reducers/worker-reducer';
 import renderSettingsReducer from './reducers/render-settings-reducer';
 import navigationReducer from './reducers/navigation-reducer';
+import gifRenderSettingsReducer from './reducers/gif-render-settings-reducer';
 import addWorkerListeners from './worker-listeners';
 import RenderView from './components/render-view.jsx';
 import RenderSettings from './components/render-settings.jsx';
 import NavigationView from './components/navigation-view.jsx';
+import GifRenderSettings from './components/gif-render-settings.jsx';
 
 var reducer = combineReducers({
 	worker: workerReducer,
 	renderSettings: renderSettingsReducer,
-	navigation: navigationReducer
+	navigation: navigationReducer,
+	gifRenderSettings: gifRenderSettingsReducer
 });
 
 var store = createStore(
@@ -36,7 +39,7 @@ var Index = connect(
 	mapStateToProps,
 )(React.createClass({
 	propTypes: {
-		progress: React.PropTypes.number
+		progress: React.PropTypes.string
 	},
 	render: function () {
 		return (
@@ -45,6 +48,7 @@ var Index = connect(
 				<RenderSettings/>
 				<RenderView/>
 				<NavigationView/>
+				<GifRenderSettings/>
 			</div>
 		);
 	}

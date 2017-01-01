@@ -1,5 +1,5 @@
 var defaultState = {
-	progress: 0,
+	progress: '0',
 	renderedData: [],
 	timestamp: 0,
 	iterations: 0,
@@ -11,7 +11,7 @@ var defaultState = {
 
 export default function (state = defaultState, action) {
 	switch (action.type) {
-		case 'RENDER':
+		case 'SINGLE_FRAME_RENDER':
 			return Object.assign({}, state, action.data);
 		case 'PROGRESS':
 			return Object.assign({}, state, {

@@ -5,12 +5,33 @@ math.config({number: 'BigNumber', precision: 64});
 
 onmessage = function (e) { // eslint-disable-line no-undef
 	// e.data contains the object posted
-	var data = e.data;
-	var workerResult = genericRender(data);
-	postMessage({
-		type: 'RENDER',
-		data: workerResult
-	});
+	var action = e.data;
+	var options = action.data;
+	var workerResult;
+	if (action.type === 'SINGLE_FRAME_RENDER') {
+		options.progressPrepend = '';
+		workerResult = genericRender(options);
+		postMessage({
+			type: 'SINGLE_FRAME_RENDER',
+			data: workerResult
+		});
+	} else if (action.type === 'GIF_RENDER') {
+		var startZoom = action.data.zoomFrom;
+		var endZoom = action.data.zoomTo;
+		var speed = action.data.speed + 1;
+		var totalRenderedData = [];
+		for (let zoom = startZoom; zoom <= endZoom; zoom *= speed) {
+			options.zoom = zoom;
+			options.progressPrepend = 'Zoom: ' + zoom + ', progress: ';
+			workerResult = genericRender(options);
+			totalRenderedData.push(workerResult.renderedData);
+		}
+		workerResult.renderedData = totalRenderedData;
+		postMessage({
+			type: 'GIF_RENDER',
+			data: workerResult
+		});
+	}
 };
 
 function genericRender(options) {
@@ -28,7 +49,7 @@ function genericRender(options) {
 	for (let yi = 0; yi < convertedOptions.height; yi++) {
 		postMessage({
 			type: 'PROGRESS',
-			data: math.divide(yi + 1, convertedOptions.height).toNumber()
+			data: options.progressPrepend + math.divide(yi + 1, convertedOptions.height).toNumber()
 		});
 		let y = math.chain(math.bignumber(convertedOptions.origin.im)).add(math.chain(pixelSize).multiply(convertedOptions.height).divide(2).done()).subtract(math.chain(pixelSize).multiply(yi).done()).done();
 		let row = [];
