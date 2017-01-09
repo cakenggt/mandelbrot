@@ -19,17 +19,16 @@ onmessage = function (e) { // eslint-disable-line no-undef
 		var startZoom = action.data.zoomFrom;
 		var endZoom = action.data.zoomTo;
 		var speed = action.data.speed + 1;
-		var totalRenderedData = [];
 		for (let zoom = startZoom; zoom <= endZoom; zoom *= speed) {
 			options.zoom = zoom;
 			options.progressPrepend = 'Zoom: ' + zoom + ', progress: ';
-			workerResult = genericRender(options);
-			totalRenderedData.push(workerResult.renderedData);
+			postMessage({
+				type: 'GIF_RENDER',
+				data: genericRender(options)
+			});
 		}
-		workerResult.renderedData = totalRenderedData;
 		postMessage({
-			type: 'GIF_RENDER',
-			data: workerResult
+			type: 'GIF_END'
 		});
 	}
 };

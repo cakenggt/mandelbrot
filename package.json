@@ -15,6 +15,7 @@
     "color-convert": "^1.8.2",
     "express": "^4.14.0",
     "gif-encoder": "^0.6.0",
+    "gif.js": "^0.2.0",
     "mathjs": "^3.8.1",
     "react": "^15.3.1",
     "react-dom": "^15.3.1",

@@ -1,37 +1,64 @@
+import GIF from 'gif.js';
 import {convertIterationsToRGBA} from '../mandelbrot-lib';
 import {worker} from './actionCreators/worker-actions';
 
-export default function (dispatch) {
+export default function (dispatch, getState) {
 	worker.onmessage = e => {
 		if (typeof e.data === 'object') {
 			var action = e.data;
+			var gif = getState().gifRenderSettings.gif;
 			if (action.type === 'GIF_RENDER') {
-				// convert iterations data to rgba for each frame
-				for (let f = 0; f < action.data.renderedData.length; f++) {
-					action.data.renderedData[f] = convertIterationsToRGBA(action.data.renderedData[f], action.data.iterations);
-				}
-				fetch('/api/v1/gif', {
-					method: 'POST',
-					headers: {
-						Accept: 'application/json',
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify(action.data)
-				})
-				.then(function (res) {
-					return res.json();
-				})
-				.then(function (json) {
-					dispatch({
-						type: 'UPDATE_GIF_RENDER_SETTINGS',
-						data: {
-							datauri: json.datauri
-						}
-					});
+				gif = gif || new GIF({
+					workers: 2,
+					quality: 10,
+					workerScript: '/js/gif.worker.js'
 				});
+				var imageData = renderData(action.data);
+				gif.addFrame(imageData, {delay: 16});
+				dispatch({
+					type: 'UPDATE_GIF_RENDER_SETTINGS',
+					data: {
+						gif: gif
+					}
+				});
+			} else if (action.type === 'GIF_END') {
+				gif.on('finished', blob => {
+					var reader = new FileReader();
+					reader.readAsDataURL(blob);
+					reader.onloadend = function () {
+						dispatch({
+							type: 'UPDATE_GIF_RENDER_SETTINGS',
+							data: {
+								datauri: reader.result
+							}
+						});
+					};
+				});
+				gif.render();
+				dispatch({
+					type: 'UPDATE_GIF_RENDER_SETTINGS',
+					data: {
+						gif: null
+					}
+				});
+			} else if (action.type === 'SINGLE_FRAME_RENDER') {
+				renderData(action.data);
 			} else {
 				dispatch(action);
 			}
 		}
 	};
+}
+
+function renderData(data) {
+	var canvas = document.getElementById('canvas');
+	var ctx = canvas.getContext('2d');
+	var renderedData = data.renderedData;
+	var rgbaData = convertIterationsToRGBA(renderedData, data.iterations);
+	var imageData = ctx.createImageData(canvas.width, canvas.height);
+	for (var i = 0; i < rgbaData.length; i++) {
+		imageData.data[i] = rgbaData[i];
+	}
+	ctx.putImageData(imageData, 0, 0);
+	return imageData;
 }

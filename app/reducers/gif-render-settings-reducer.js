@@ -1,6 +1,7 @@
 var defaultState = {
 	zoomFrom: '0.5',
 	speed: '0.1',
+	gif: null,
 	datauri: ''
 };
 

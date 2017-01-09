@@ -12,7 +12,7 @@ var GifRenderSettings = React.createClass({
 	},
 	render: function () {
 		var link = this.props.datauri ?
-			<a href={'data:gif/image;base64,' + this.props.datauri} download="mandelbrot.gif">Download</a> :
+			<a href={this.props.datauri} download="mandelbrot.gif">Download</a> :
 			null;
 		return (
 			<div>

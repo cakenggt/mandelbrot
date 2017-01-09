@@ -11,8 +11,6 @@ var defaultState = {
 
 export default function (state = defaultState, action) {
 	switch (action.type) {
-		case 'SINGLE_FRAME_RENDER':
-			return Object.assign({}, state, action.data);
 		case 'PROGRESS':
 			return Object.assign({}, state, {
 				progress: action.data
