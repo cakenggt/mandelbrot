@@ -11,7 +11,7 @@ export default function (dispatch, getState) {
 				gif = gif || new GIF({
 					workers: 2,
 					quality: 10,
-					workerScript: '/js/gif.worker.js'
+					workerScript: 'js/gif.worker.js'
 				});
 				var imageData = renderData(action.data);
 				gif.addFrame(imageData, {delay: 16});

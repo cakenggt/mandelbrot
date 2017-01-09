@@ -1,4 +1,4 @@
-export const worker = new Worker('/js/worker.js');
+export const worker = new Worker('js/worker.js');
 
 export function startRender() {
 	return function (dispatch, getState) {

@@ -1,6 +1,5 @@
 import 'babel-polyfill'; // eslint-disable-line import/no-unassigned-import
 import React from 'react';
-import {Router, Route, IndexRoute, browserHistory} from 'react-router';
 import {render} from 'react-dom';
 import {Provider, connect} from 'react-redux';
 import {createStore, combineReducers, applyMiddleware} from 'redux';
@@ -54,15 +53,7 @@ var Index = connect(
 	}
 }));
 
-var router = (
-	<Router history={browserHistory}>
-		<Route path="/" >
-			<IndexRoute component={Index}/>
-		</Route>
-	</Router>
-);
-
 render(
-	<Provider store={store}>{router}</Provider>,
+	<Provider store={store}><Index/></Provider>,
 	document.getElementById('app')
 );
