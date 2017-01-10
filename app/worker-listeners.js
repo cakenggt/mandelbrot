@@ -42,6 +42,10 @@ export default function (dispatch, getState) {
 					}
 				});
 			} else if (action.type === 'SINGLE_FRAME_RENDER') {
+				dispatch({
+					type: 'UPDATE_WORKER_STATE',
+					data: action.data
+				});
 				renderData(action.data);
 			} else {
 				dispatch(action);

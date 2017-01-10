@@ -15,6 +15,8 @@ export default function (state = defaultState, action) {
 			return Object.assign({}, state, {
 				progress: action.data
 			});
+		case 'UPDATE_WORKER_STATE':
+			return Object.assign({}, state, action.data);
 		default:
 			return state;
 	}
