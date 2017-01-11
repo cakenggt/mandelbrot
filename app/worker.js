@@ -11,6 +11,7 @@ onmessage = function (e) { // eslint-disable-line no-undef
 	if (action.type === 'SINGLE_FRAME_RENDER') {
 		options.progressFunction = progress => progress;
 		workerResult = genericRender(options);
+		sanitizeMessage(workerResult);
 		postMessage({
 			type: 'SINGLE_FRAME_RENDER',
 			data: workerResult
@@ -27,8 +28,7 @@ onmessage = function (e) { // eslint-disable-line no-undef
 		for (let zoom = startZoom; zoom <= endZoom; zoom *= speed) {
 			options.zoom = zoom;
 			var data = genericRender(options);
-			// sanitize the data for posting
-			delete data.progressFunction;
+			sanitizeMessage(data);
 			postMessage({
 				type: 'GIF_RENDER',
 				data: data
@@ -40,6 +40,19 @@ onmessage = function (e) { // eslint-disable-line no-undef
 		});
 	}
 };
+
+/*
+ * Removes all functions from an object
+ */
+function sanitizeMessage(data) {
+	var keys = Object.keys(data);
+	for (var k = 0; k < keys.length; k++) {
+		var key = keys[k];
+		if (data[key] instanceof Function) {
+			delete data[key];
+		}
+	}
+}
 
 function genericRender(options) {
 	// zoom is how many units can fit in the width
