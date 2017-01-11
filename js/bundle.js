@@ -91435,10 +91435,10 @@
 			objectURL: _react2.default.PropTypes.string
 		},
 		render: function render() {
-			var link = this.props.objectURL ? _react2.default.createElement(
-				'a',
-				{ href: this.props.objectURL, target: '_blank', rel: 'noreferrer noopener' },
-				'Link'
+			var gif = this.props.objectURL ? _react2.default.createElement(
+				'div',
+				null,
+				_react2.default.createElement('img', { src: this.props.objectURL })
 			) : null;
 			return _react2.default.createElement(
 				'div',
@@ -91468,7 +91468,7 @@
 					},
 					'Render'
 				),
-				link
+				gif
 			);
 		},
 		handleZoomFromChange: function handleZoomFromChange(e) {

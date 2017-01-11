@@ -11,8 +11,8 @@ var GifRenderSettings = React.createClass({
 		objectURL: React.PropTypes.string
 	},
 	render: function () {
-		var link = this.props.objectURL ?
-			<a href={this.props.objectURL} target="_blank" rel="noreferrer noopener">Link</a> :
+		var gif = this.props.objectURL ?
+			<div><img src={this.props.objectURL}/></div> :
 			null;
 		return (
 			<div>
@@ -33,7 +33,7 @@ var GifRenderSettings = React.createClass({
 				<span
 					onClick={this.handleRenderClick}
 					>Render</span>
-				{link}
+				{gif}
 			</div>
 		);
 	},
