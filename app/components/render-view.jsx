@@ -4,26 +4,64 @@ import math from 'mathjs';
 import {getPixelSize} from '../../mandelbrot-lib';
 
 var RenderView = React.createClass({
-	shouldComponentUpdate: function (nextProps) {
-		return this.props.timestamp !== nextProps.timestamp;
-	},
 	propTypes: {
-		timestamp: React.PropTypes.number,
 		width: React.PropTypes.number,
 		height: React.PropTypes.number,
 		zoom: React.PropTypes.number,
 		origin: React.PropTypes.string,
-		navigate: React.PropTypes.func
+		navigate: React.PropTypes.func,
+		objectURL: React.PropTypes.string
+	},
+	getInitialState: function () {
+		return {
+			mouseX: null,
+			mouseY: null
+		};
 	},
 	render: function () {
+		var gif = this.props.objectURL ?
+			(<div>
+				<a href={this.props.objectURL} download="mandelbrot.gif">
+					<img src={this.props.objectURL}/>
+				</a>
+			</div>) :
+			null;
+		var zoomFactor = 5;
+		var zoomBox = this.state.mouseX === null ?
+			null :
+			(
+				<div
+					className="zoom-box"
+					style={{
+						left: this.state.mouseX - (this.props.width / (zoomFactor * 2)),
+						top: this.state.mouseY - (this.props.height / (zoomFactor * 2)),
+						width: this.props.width / zoomFactor,
+						height: this.props.height / zoomFactor
+					}}
+					/>
+			);
 		return (
-			<canvas
-				ref={this.bindCanvas}
-				width={this.props.width}
-				height={this.props.height}
-				onClick={this.handleNavigationClick}
-				id="canvas"
-				/>
+			<div
+				className="render-view"
+				>
+				<div>
+					{zoomBox}
+					<canvas
+						ref={this.bindCanvas}
+						width={this.props.width}
+						height={this.props.height}
+						id="canvas"
+						style={{
+							width: this.props.width,
+							height: this.props.height
+						}}
+						onClick={this.handleNavigationClick}
+						onMouseMove={this.handleMouseMove}
+						onMouseLeave={this.handleMouseLeave}
+						/>
+				</div>
+				{gif}
+			</div>
 		);
 	},
 	bindCanvas: function (c) {
@@ -40,16 +78,25 @@ var RenderView = React.createClass({
 		this.props.navigate({
 			origin: clickLoc.toString()
 		});
+	},
+	handleMouseMove: function (e) {
+		this.setState({
+			mouseX: e.pageX,
+			mouseY: e.pageY
+		});
+	},
+	handleMouseLeave: function () {
+		this.setState({mouseX: null, mouseY: null});
 	}
 });
 
 var mapStateToProps = state => {
 	return {
-		timestamp: state.worker.timestamp,
 		width: state.worker.width,
 		height: state.worker.height,
 		zoom: state.worker.zoom,
-		origin: state.worker.origin
+		origin: state.worker.origin,
+		objectURL: state.gifRenderSettings.objectURL
 	};
 };
 

@@ -147,8 +147,7 @@
 			result.push(row);
 		}
 		return Object.assign({}, options, {
-			renderedData: result,
-			timestamp: new Date().getTime()
+			renderedData: result
 		});
 	}
 

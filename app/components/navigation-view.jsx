@@ -12,6 +12,7 @@ var NavigationView = React.createClass({
 	render: function () {
 		return (
 			<div>
+				<h2>Navigation</h2>
 				<div>
 					Your clicked origin is:
 				</div>

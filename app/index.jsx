@@ -43,11 +43,28 @@ var Index = connect(
 	render: function () {
 		return (
 			<div>
-				<div>Progress: {this.props.progress}</div>
-				<RenderSettings/>
-				<RenderView/>
-				<NavigationView/>
-				<GifRenderSettings/>
+				<div
+					className="progress-bar"
+					>
+					<div
+						className="progress-bar-inner"
+						style={{
+							width: (this.props.progress * 100) + '%'
+						}}
+						/>
+				</div>
+				<div
+					className="container"
+					>
+					<RenderSettings/>
+					<RenderView/>
+					<div
+						className="right-pane"
+						>
+						<NavigationView/>
+						<GifRenderSettings/>
+					</div>
+				</div>
 			</div>
 		);
 	}

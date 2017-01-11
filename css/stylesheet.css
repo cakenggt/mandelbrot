@@ -5,3 +5,26 @@
 .progress-bar {
 	height: 10px;
 }
+.progress-bar-inner {
+	height: 100%;
+	background-color: green;
+}
+.render-settings {
+	flex: 1 1 auto;
+	justify-content: center;
+}
+.render-view {
+	display: flex;
+	flex: 2 1 auto;
+	justify-content: center;
+}
+.right-pane {
+	flex: 1 1 auto;
+	justify-content: center;
+}
+.zoom-box {
+	border: 1px black solid;
+	position: fixed;
+	pointer-events: none;
+	box-sizing: border-box;
+}

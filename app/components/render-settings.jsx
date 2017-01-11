@@ -16,7 +16,10 @@ var RenderSettings = React.createClass({
 	},
 	render: function () {
 		return (
-			<div>
+			<div
+				className="render-settings"
+				>
+				<h2>Render Settings</h2>
 				<div>
 					Origin
 					<input

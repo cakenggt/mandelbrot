@@ -133,14 +133,32 @@
 				null,
 				_react2.default.createElement(
 					'div',
-					null,
-					'Progress: ',
-					this.props.progress
+					{
+						className: 'progress-bar'
+					},
+					_react2.default.createElement('div', {
+						className: 'progress-bar-inner',
+						style: {
+							width: this.props.progress * 100 + '%'
+						}
+					})
 				),
-				_react2.default.createElement(_renderSettings2.default, null),
-				_react2.default.createElement(_renderView2.default, null),
-				_react2.default.createElement(_navigationView2.default, null),
-				_react2.default.createElement(_gifRenderSettings2.default, null)
+				_react2.default.createElement(
+					'div',
+					{
+						className: 'container'
+					},
+					_react2.default.createElement(_renderSettings2.default, null),
+					_react2.default.createElement(_renderView2.default, null),
+					_react2.default.createElement(
+						'div',
+						{
+							className: 'right-pane'
+						},
+						_react2.default.createElement(_navigationView2.default, null),
+						_react2.default.createElement(_gifRenderSettings2.default, null)
+					)
+				)
 			);
 		}
 	}));
@@ -32837,7 +32855,6 @@
 	var defaultState = {
 		progress: 0,
 		renderedData: [],
-		timestamp: 0,
 		iterations: 0,
 		zoom: 0,
 		origin: '0+0i',
@@ -32975,6 +32992,10 @@
 						data: {
 							gif: gif
 						}
+					});
+					dispatch({
+						type: 'UPDATE_WORKER_STATE',
+						data: action.data
 					});
 				} else if (action.type === 'GIF_END') {
 					// destroy old objectURL and wipe stored url to unload link
@@ -91055,25 +91076,65 @@
 	var RenderView = _react2.default.createClass({
 		displayName: 'RenderView',
 	
-		shouldComponentUpdate: function shouldComponentUpdate(nextProps) {
-			return this.props.timestamp !== nextProps.timestamp;
-		},
 		propTypes: {
-			timestamp: _react2.default.PropTypes.number,
 			width: _react2.default.PropTypes.number,
 			height: _react2.default.PropTypes.number,
 			zoom: _react2.default.PropTypes.number,
 			origin: _react2.default.PropTypes.string,
-			navigate: _react2.default.PropTypes.func
+			navigate: _react2.default.PropTypes.func,
+			objectURL: _react2.default.PropTypes.string
+		},
+		getInitialState: function getInitialState() {
+			return {
+				mouseX: null,
+				mouseY: null
+			};
 		},
 		render: function render() {
-			return _react2.default.createElement('canvas', {
-				ref: this.bindCanvas,
-				width: this.props.width,
-				height: this.props.height,
-				onClick: this.handleNavigationClick,
-				id: 'canvas'
+			var gif = this.props.objectURL ? _react2.default.createElement(
+				'div',
+				null,
+				_react2.default.createElement(
+					'a',
+					{ href: this.props.objectURL, download: 'mandelbrot.gif' },
+					_react2.default.createElement('img', { src: this.props.objectURL })
+				)
+			) : null;
+			var zoomFactor = 5;
+			var zoomBox = this.state.mouseX === null ? null : _react2.default.createElement('div', {
+				className: 'zoom-box',
+				style: {
+					left: this.state.mouseX - this.props.width / (zoomFactor * 2),
+					top: this.state.mouseY - this.props.height / (zoomFactor * 2),
+					width: this.props.width / zoomFactor,
+					height: this.props.height / zoomFactor
+				}
 			});
+			return _react2.default.createElement(
+				'div',
+				{
+					className: 'render-view'
+				},
+				_react2.default.createElement(
+					'div',
+					null,
+					zoomBox,
+					_react2.default.createElement('canvas', {
+						ref: this.bindCanvas,
+						width: this.props.width,
+						height: this.props.height,
+						id: 'canvas',
+						style: {
+							width: this.props.width,
+							height: this.props.height
+						},
+						onClick: this.handleNavigationClick,
+						onMouseMove: this.handleMouseMove,
+						onMouseLeave: this.handleMouseLeave
+					})
+				),
+				gif
+			);
 		},
 		bindCanvas: function bindCanvas(c) {
 			this.canvas = c;
@@ -91089,16 +91150,25 @@
 			this.props.navigate({
 				origin: clickLoc.toString()
 			});
+		},
+		handleMouseMove: function handleMouseMove(e) {
+			this.setState({
+				mouseX: e.pageX,
+				mouseY: e.pageY
+			});
+		},
+		handleMouseLeave: function handleMouseLeave() {
+			this.setState({ mouseX: null, mouseY: null });
 		}
 	});
 	
 	var mapStateToProps = function mapStateToProps(state) {
 		return {
-			timestamp: state.worker.timestamp,
 			width: state.worker.width,
 			height: state.worker.height,
 			zoom: state.worker.zoom,
-			origin: state.worker.origin
+			origin: state.worker.origin,
+			objectURL: state.gifRenderSettings.objectURL
 		};
 	};
 	
@@ -91155,7 +91225,14 @@
 		render: function render() {
 			return _react2.default.createElement(
 				'div',
-				null,
+				{
+					className: 'render-settings'
+				},
+				_react2.default.createElement(
+					'h2',
+					null,
+					'Render Settings'
+				),
 				_react2.default.createElement(
 					'div',
 					null,
@@ -91333,6 +91410,11 @@
 				'div',
 				null,
 				_react2.default.createElement(
+					'h2',
+					null,
+					'Navigation'
+				),
+				_react2.default.createElement(
 					'div',
 					null,
 					'Your clicked origin is:'
@@ -91437,22 +91519,17 @@
 			zoomFrom: _react2.default.PropTypes.string,
 			speed: _react2.default.PropTypes.string,
 			startGifRender: _react2.default.PropTypes.func,
-			updateGifRenderSettings: _react2.default.PropTypes.func,
-			objectURL: _react2.default.PropTypes.string
+			updateGifRenderSettings: _react2.default.PropTypes.func
 		},
 		render: function render() {
-			var gif = this.props.objectURL ? _react2.default.createElement(
-				'div',
-				null,
-				_react2.default.createElement(
-					'a',
-					{ href: this.props.objectURL, download: 'mandelbrot.gif' },
-					_react2.default.createElement('img', { src: this.props.objectURL })
-				)
-			) : null;
 			return _react2.default.createElement(
 				'div',
 				null,
+				_react2.default.createElement(
+					'h2',
+					null,
+					'GIF Settings'
+				),
 				_react2.default.createElement(
 					'div',
 					null,
@@ -91477,8 +91554,7 @@
 						onClick: this.handleRenderClick
 					},
 					'Render'
-				),
-				gif
+				)
 			);
 		},
 		handleZoomFromChange: function handleZoomFromChange(e) {
@@ -91499,8 +91575,7 @@
 	var mapStateToProps = function mapStateToProps(state) {
 		return {
 			zoomFrom: state.gifRenderSettings.zoomFrom,
-			speed: state.gifRenderSettings.speed,
-			objectURL: state.gifRenderSettings.objectURL
+			speed: state.gifRenderSettings.speed
 		};
 	};
 	

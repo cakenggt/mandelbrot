@@ -1,7 +1,6 @@
 var defaultState = {
 	progress: 0,
 	renderedData: [],
-	timestamp: 0,
 	iterations: 0,
 	zoom: 0,
 	origin: '0+0i',

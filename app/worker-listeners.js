@@ -22,6 +22,10 @@ export default function (dispatch, getState) {
 						gif: gif
 					}
 				});
+				dispatch({
+					type: 'UPDATE_WORKER_STATE',
+					data: action.data
+				});
 			} else if (action.type === 'GIF_END') {
 				// destroy old objectURL and wipe stored url to unload link
 				if (gifRenderSettings.objectURL) {

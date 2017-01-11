@@ -7,19 +7,12 @@ var GifRenderSettings = React.createClass({
 		zoomFrom: React.PropTypes.string,
 		speed: React.PropTypes.string,
 		startGifRender: React.PropTypes.func,
-		updateGifRenderSettings: React.PropTypes.func,
-		objectURL: React.PropTypes.string
+		updateGifRenderSettings: React.PropTypes.func
 	},
 	render: function () {
-		var gif = this.props.objectURL ?
-			(<div>
-				<a href={this.props.objectURL} download="mandelbrot.gif">
-					<img src={this.props.objectURL}/>
-				</a>
-			</div>) :
-			null;
 		return (
 			<div>
+				<h2>GIF Settings</h2>
 				<div>
 					Zoom From
 					<input
@@ -37,7 +30,6 @@ var GifRenderSettings = React.createClass({
 				<span
 					onClick={this.handleRenderClick}
 					>Render</span>
-				{gif}
 			</div>
 		);
 	},
@@ -59,8 +51,7 @@ var GifRenderSettings = React.createClass({
 var mapStateToProps = state => {
 	return {
 		zoomFrom: state.gifRenderSettings.zoomFrom,
-		speed: state.gifRenderSettings.speed,
-		objectURL: state.gifRenderSettings.objectURL
+		speed: state.gifRenderSettings.speed
 	};
 };
 
