@@ -91459,6 +91459,7 @@
 			this.props.updateRenderSettings({
 				origin: this.props.origin
 			});
+			this.props.startRender();
 		},
 		handleZoomInClick: function handleZoomInClick() {
 			this.props.updateRenderSettings({

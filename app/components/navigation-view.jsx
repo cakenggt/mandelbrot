@@ -36,6 +36,7 @@ var NavigationView = React.createClass({
 		this.props.updateRenderSettings({
 			origin: this.props.origin
 		});
+		this.props.startRender();
 	},
 	handleZoomInClick: function () {
 		this.props.updateRenderSettings({
