@@ -38,7 +38,7 @@ var Index = connect(
 	mapStateToProps,
 )(React.createClass({
 	propTypes: {
-		progress: React.PropTypes.string
+		progress: React.PropTypes.number
 	},
 	render: function () {
 		return (

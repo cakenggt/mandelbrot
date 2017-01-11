@@ -125,7 +125,7 @@
 		displayName: 'Index',
 	
 		propTypes: {
-			progress: _react2.default.PropTypes.string
+			progress: _react2.default.PropTypes.number
 		},
 		render: function render() {
 			return _react2.default.createElement(
@@ -32835,7 +32835,7 @@
 	};
 	
 	var defaultState = {
-		progress: '0',
+		progress: 0,
 		renderedData: [],
 		timestamp: 0,
 		iterations: 0,
@@ -32977,9 +32977,15 @@
 						}
 					});
 				} else if (action.type === 'GIF_END') {
-					// destroy old objectURL
+					// destroy old objectURL and wipe stored url to unload link
 					if (gifRenderSettings.objectURL) {
 						URL.revokeObjectURL(gifRenderSettings.objectURL);
+						dispatch({
+							type: 'UPDATE_GIF_RENDER_SETTINGS',
+							data: {
+								objectURL: ''
+							}
+						});
 					}
 					gif.on('finished', function (blob) {
 						dispatch({
@@ -91438,7 +91444,11 @@
 			var gif = this.props.objectURL ? _react2.default.createElement(
 				'div',
 				null,
-				_react2.default.createElement('img', { src: this.props.objectURL })
+				_react2.default.createElement(
+					'a',
+					{ href: this.props.objectURL, download: 'mandelbrot.gif' },
+					_react2.default.createElement('img', { src: this.props.objectURL })
+				)
 			) : null;
 			return _react2.default.createElement(
 				'div',

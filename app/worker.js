@@ -9,7 +9,7 @@ onmessage = function (e) { // eslint-disable-line no-undef
 	var options = action.data;
 	var workerResult;
 	if (action.type === 'SINGLE_FRAME_RENDER') {
-		options.progressPrepend = '';
+		options.progressFunction = progress => progress;
 		workerResult = genericRender(options);
 		postMessage({
 			type: 'SINGLE_FRAME_RENDER',
@@ -19,13 +19,21 @@ onmessage = function (e) { // eslint-disable-line no-undef
 		var startZoom = action.data.zoomFrom;
 		var endZoom = action.data.zoomTo;
 		var speed = action.data.speed + 1;
+		var totalFrames = Math.ceil(Math.log(endZoom / startZoom) / Math.log(speed));
+		var currentFrame = 0;
+		options.progressFunction = progress => {
+			return (currentFrame / totalFrames) + (progress * (1 / totalFrames));
+		};
 		for (let zoom = startZoom; zoom <= endZoom; zoom *= speed) {
 			options.zoom = zoom;
-			options.progressPrepend = 'Zoom: ' + zoom + ', progress: ';
+			var data = genericRender(options);
+			// sanitize the data for posting
+			delete data.progressFunction;
 			postMessage({
 				type: 'GIF_RENDER',
-				data: genericRender(options)
+				data: data
 			});
+			currentFrame++;
 		}
 		postMessage({
 			type: 'GIF_END'
@@ -48,7 +56,9 @@ function genericRender(options) {
 	for (let yi = 0; yi < convertedOptions.height; yi++) {
 		postMessage({
 			type: 'PROGRESS',
-			data: options.progressPrepend + math.divide(yi + 1, convertedOptions.height).toNumber()
+			data: options.progressFunction(
+				math.divide(yi + 1, convertedOptions.height).toNumber()
+			)
 		});
 		let y = math.chain(math.bignumber(convertedOptions.origin.im)).add(math.chain(pixelSize).multiply(convertedOptions.height).divide(2).done()).subtract(math.chain(pixelSize).multiply(yi).done()).done();
 		let row = [];

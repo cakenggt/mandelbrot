@@ -23,9 +23,15 @@ export default function (dispatch, getState) {
 					}
 				});
 			} else if (action.type === 'GIF_END') {
-				// destroy old objectURL
+				// destroy old objectURL and wipe stored url to unload link
 				if (gifRenderSettings.objectURL) {
 					URL.revokeObjectURL(gifRenderSettings.objectURL);
+					dispatch({
+						type: 'UPDATE_GIF_RENDER_SETTINGS',
+						data: {
+							objectURL: ''
+						}
+					});
 				}
 				gif.on('finished', blob => {
 					dispatch({

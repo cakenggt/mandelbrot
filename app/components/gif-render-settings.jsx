@@ -12,7 +12,11 @@ var GifRenderSettings = React.createClass({
 	},
 	render: function () {
 		var gif = this.props.objectURL ?
-			<div><img src={this.props.objectURL}/></div> :
+			(<div>
+				<a href={this.props.objectURL} download="mandelbrot.gif">
+					<img src={this.props.objectURL}/>
+				</a>
+			</div>) :
 			null;
 		return (
 			<div>

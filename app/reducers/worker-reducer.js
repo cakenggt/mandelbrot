@@ -1,5 +1,5 @@
 var defaultState = {
-	progress: '0',
+	progress: 0,
 	renderedData: [],
 	timestamp: 0,
 	iterations: 0,
