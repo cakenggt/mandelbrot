@@ -59,7 +59,7 @@ var Index = connect(
 					<RenderSettings/>
 					<RenderView/>
 					<div
-						className="right-pane"
+						className="right-pane bordered"
 						>
 						<NavigationView/>
 						<GifRenderSettings/>

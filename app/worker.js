@@ -19,13 +19,13 @@ onmessage = function (e) { // eslint-disable-line no-undef
 	} else if (action.type === 'GIF_RENDER') {
 		var startZoom = action.data.zoomFrom;
 		var endZoom = action.data.zoomTo;
-		var speed = action.data.speed + 1;
-		var totalFrames = Math.ceil(Math.log(endZoom / startZoom) / Math.log(speed));
+		var zoomSpeed = action.data.zoomSpeed + 1;
+		var totalFrames = Math.ceil(Math.log(endZoom / startZoom) / Math.log(zoomSpeed));
 		var currentFrame = 0;
 		options.progressFunction = progress => {
 			return (currentFrame / totalFrames) + (progress * (1 / totalFrames));
 		};
-		for (let zoom = startZoom; zoom <= endZoom; zoom *= speed) {
+		for (let zoom = startZoom; zoom <= endZoom; zoom *= zoomSpeed) {
 			options.zoom = zoom;
 			var data = genericRender(options);
 			sanitizeMessage(data);

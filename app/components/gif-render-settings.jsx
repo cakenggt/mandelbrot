@@ -5,7 +5,8 @@ import {startGifRender} from '../actionCreators/worker-actions';
 var GifRenderSettings = React.createClass({
 	propTypes: {
 		zoomFrom: React.PropTypes.string,
-		speed: React.PropTypes.string,
+		zoomSpeed: React.PropTypes.string,
+		frameDelay: React.PropTypes.string,
 		startGifRender: React.PropTypes.func,
 		updateGifRenderSettings: React.PropTypes.func
 	},
@@ -21,14 +22,22 @@ var GifRenderSettings = React.createClass({
 						/>
 				</div>
 				<div>
-					Speed
+					Zoom Speed
 					<input
-						onChange={this.handleSpeedChange}
-						value={this.props.speed}
+						onChange={this.handleZoomSpeedChange}
+						value={this.props.zoomSpeed}
+						/>
+				</div>
+				<div>
+					Frame Delay
+					<input
+						onChange={this.handleFrameDelayChange}
+						value={this.props.frameDelay}
 						/>
 				</div>
 				<span
 					onClick={this.handleRenderClick}
+					className="btn"
 					>Render</span>
 			</div>
 		);
@@ -38,9 +47,14 @@ var GifRenderSettings = React.createClass({
 			zoomFrom: e.target.value
 		});
 	},
-	handleSpeedChange: function (e) {
+	handleZoomSpeedChange: function (e) {
 		this.props.updateGifRenderSettings({
-			speed: e.target.value
+			zoomSpeed: e.target.value
+		});
+	},
+	handleFrameDelayChange: function (e) {
+		this.props.updateGifRenderSettings({
+			frameDelay: e.target.value
 		});
 	},
 	handleRenderClick: function () {
@@ -51,7 +65,8 @@ var GifRenderSettings = React.createClass({
 var mapStateToProps = state => {
 	return {
 		zoomFrom: state.gifRenderSettings.zoomFrom,
-		speed: state.gifRenderSettings.speed
+		zoomSpeed: state.gifRenderSettings.zoomSpeed,
+		frameDelay: state.gifRenderSettings.frameDelay
 	};
 };
 

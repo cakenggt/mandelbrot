@@ -15,7 +15,7 @@ export default function (dispatch, getState) {
 					workerScript: 'js/gif.worker.js'
 				});
 				var imageData = renderData(action.data);
-				gif.addFrame(imageData, {delay: 16});
+				gif.addFrame(imageData, {delay: action.data.frameDelay});
 				dispatch({
 					type: 'UPDATE_GIF_RENDER_SETTINGS',
 					data: {

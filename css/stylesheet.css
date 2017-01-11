@@ -3,11 +3,13 @@
 	flex-direction: row;
 }
 .progress-bar {
-	height: 10px;
+	height: 2px;
+	margin: 3px;
 }
 .progress-bar-inner {
 	height: 100%;
-	background-color: green;
+	background-color: black;
+	border-radius: 3px;
 }
 .render-settings {
 	flex: 1 1 auto;
@@ -17,6 +19,7 @@
 	display: flex;
 	flex: 2 1 auto;
 	justify-content: center;
+	align-items: center;
 }
 .right-pane {
 	flex: 1 1 auto;
@@ -27,4 +30,31 @@
 	position: fixed;
 	pointer-events: none;
 	box-sizing: border-box;
+}
+input {
+	border: 2px black solid;
+	border-radius: 3px;
+	margin: 3px;
+	padding: 6px;
+	font-family: 'Domine', serif;
+	font-size: 16px;
+}
+.btn {
+	background-color: black;
+	color: white;
+	border-radius: 3px;
+	margin: 3px;
+	padding: 6px;
+	display: inline-block;
+	cursor: pointer;
+	user-select: none;
+}
+.bordered{
+	border: 2px black solid;
+	border-radius: 3px;
+	margin: 3px;
+	padding: 3px;
+}
+canvas, img {
+	margin: 3px;
 }

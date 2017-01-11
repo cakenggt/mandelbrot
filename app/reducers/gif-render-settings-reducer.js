@@ -1,6 +1,7 @@
 var defaultState = {
 	zoomFrom: '0.5',
-	speed: '0.1',
+	zoomSpeed: '0.1',
+	frameDelay: '16.666',
 	gif: null,
 	objectURL: ''
 };

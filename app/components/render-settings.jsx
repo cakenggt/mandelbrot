@@ -17,7 +17,7 @@ var RenderSettings = React.createClass({
 	render: function () {
 		return (
 			<div
-				className="render-settings"
+				className="render-settings bordered"
 				>
 				<h2>Render Settings</h2>
 				<div>
@@ -71,6 +71,7 @@ var RenderSettings = React.createClass({
 				</div>
 				<span
 					onClick={this.handleRenderClick}
+					className="btn"
 					>Render</span>
 			</div>
 		);

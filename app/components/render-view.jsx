@@ -42,25 +42,27 @@ var RenderView = React.createClass({
 			);
 		return (
 			<div
-				className="render-view"
+				className="render-view bordered"
 				>
 				<div>
-					{zoomBox}
-					<canvas
-						ref={this.bindCanvas}
-						width={this.props.width}
-						height={this.props.height}
-						id="canvas"
-						style={{
-							width: this.props.width,
-							height: this.props.height
-						}}
-						onClick={this.handleNavigationClick}
-						onMouseMove={this.handleMouseMove}
-						onMouseLeave={this.handleMouseLeave}
-						/>
+					<div>
+						{zoomBox}
+						<canvas
+							ref={this.bindCanvas}
+							width={this.props.width}
+							height={this.props.height}
+							id="canvas"
+							style={{
+								width: this.props.width,
+								height: this.props.height
+							}}
+							onClick={this.handleNavigationClick}
+							onMouseMove={this.handleMouseMove}
+							onMouseLeave={this.handleMouseLeave}
+							/>
+					</div>
+					{gif}
 				</div>
-				{gif}
 			</div>
 		);
 	},

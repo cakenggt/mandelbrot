@@ -27,8 +27,9 @@ export function startGifRender() {
 		renderSettings = {
 			origin: renderSettings.origin,
 			zoomFrom: parseFloat(gifRenderSettings.zoomFrom),
-			speed: parseFloat(gifRenderSettings.speed),
+			zoomSpeed: parseFloat(gifRenderSettings.zoomSpeed),
 			zoomTo: parseFloat(renderSettings.zoom),
+			frameDelay: parseFloat(gifRenderSettings.frameDelay),
 			width: parseInt(renderSettings.width, 10),
 			height: parseInt(renderSettings.height, 10),
 			iterations: parseInt(renderSettings.iterations, 10),

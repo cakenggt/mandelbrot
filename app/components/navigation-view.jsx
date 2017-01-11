@@ -21,12 +21,13 @@ var NavigationView = React.createClass({
 				</div>
 				<span
 					onClick={this.handleSetOriginClick}
+					className="btn"
 					>
 					Set origin
 				</span>
 				<div>
-					<span onClick={this.handleZoomInClick}>Zoom in</span>
-					<span onClick={this.handleZoomOutClick}>Zoom out</span>
+					<span className="btn" onClick={this.handleZoomInClick}>Zoom in</span>
+					<span className="btn" onClick={this.handleZoomOutClick}>Zoom out</span>
 				</div>
 			</div>
 		);

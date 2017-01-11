@@ -153,7 +153,7 @@
 					_react2.default.createElement(
 						'div',
 						{
-							className: 'right-pane'
+							className: 'right-pane bordered'
 						},
 						_react2.default.createElement(_navigationView2.default, null),
 						_react2.default.createElement(_gifRenderSettings2.default, null)
@@ -32953,7 +32953,8 @@
 	
 	var defaultState = {
 		zoomFrom: '0.5',
-		speed: '0.1',
+		zoomSpeed: '0.1',
+		frameDelay: '16.666',
 		gif: null,
 		objectURL: ''
 	};
@@ -32986,7 +32987,7 @@
 						workerScript: 'js/gif.worker.js'
 					});
 					var imageData = renderData(action.data);
-					gif.addFrame(imageData, { delay: 16 });
+					gif.addFrame(imageData, { delay: action.data.frameDelay });
 					dispatch({
 						type: 'UPDATE_GIF_RENDER_SETTINGS',
 						data: {
@@ -91031,8 +91032,9 @@
 			renderSettings = {
 				origin: renderSettings.origin,
 				zoomFrom: parseFloat(gifRenderSettings.zoomFrom),
-				speed: parseFloat(gifRenderSettings.speed),
+				zoomSpeed: parseFloat(gifRenderSettings.zoomSpeed),
 				zoomTo: parseFloat(renderSettings.zoom),
+				frameDelay: parseFloat(gifRenderSettings.frameDelay),
 				width: parseInt(renderSettings.width, 10),
 				height: parseInt(renderSettings.height, 10),
 				iterations: parseInt(renderSettings.iterations, 10),
@@ -91113,27 +91115,31 @@
 			return _react2.default.createElement(
 				'div',
 				{
-					className: 'render-view'
+					className: 'render-view bordered'
 				},
 				_react2.default.createElement(
 					'div',
 					null,
-					zoomBox,
-					_react2.default.createElement('canvas', {
-						ref: this.bindCanvas,
-						width: this.props.width,
-						height: this.props.height,
-						id: 'canvas',
-						style: {
+					_react2.default.createElement(
+						'div',
+						null,
+						zoomBox,
+						_react2.default.createElement('canvas', {
+							ref: this.bindCanvas,
 							width: this.props.width,
-							height: this.props.height
-						},
-						onClick: this.handleNavigationClick,
-						onMouseMove: this.handleMouseMove,
-						onMouseLeave: this.handleMouseLeave
-					})
-				),
-				gif
+							height: this.props.height,
+							id: 'canvas',
+							style: {
+								width: this.props.width,
+								height: this.props.height
+							},
+							onClick: this.handleNavigationClick,
+							onMouseMove: this.handleMouseMove,
+							onMouseLeave: this.handleMouseLeave
+						})
+					),
+					gif
+				)
 			);
 		},
 		bindCanvas: function bindCanvas(c) {
@@ -91226,7 +91232,7 @@
 			return _react2.default.createElement(
 				'div',
 				{
-					className: 'render-settings'
+					className: 'render-settings bordered'
 				},
 				_react2.default.createElement(
 					'h2',
@@ -91299,7 +91305,8 @@
 				_react2.default.createElement(
 					'span',
 					{
-						onClick: this.handleRenderClick
+						onClick: this.handleRenderClick,
+						className: 'btn'
 					},
 					'Render'
 				)
@@ -91427,7 +91434,8 @@
 				_react2.default.createElement(
 					'span',
 					{
-						onClick: this.handleSetOriginClick
+						onClick: this.handleSetOriginClick,
+						className: 'btn'
 					},
 					'Set origin'
 				),
@@ -91436,12 +91444,12 @@
 					null,
 					_react2.default.createElement(
 						'span',
-						{ onClick: this.handleZoomInClick },
+						{ className: 'btn', onClick: this.handleZoomInClick },
 						'Zoom in'
 					),
 					_react2.default.createElement(
 						'span',
-						{ onClick: this.handleZoomOutClick },
+						{ className: 'btn', onClick: this.handleZoomOutClick },
 						'Zoom out'
 					)
 				)
@@ -91517,7 +91525,8 @@
 	
 		propTypes: {
 			zoomFrom: _react2.default.PropTypes.string,
-			speed: _react2.default.PropTypes.string,
+			zoomSpeed: _react2.default.PropTypes.string,
+			frameDelay: _react2.default.PropTypes.string,
 			startGifRender: _react2.default.PropTypes.func,
 			updateGifRenderSettings: _react2.default.PropTypes.func
 		},
@@ -91542,16 +91551,26 @@
 				_react2.default.createElement(
 					'div',
 					null,
-					'Speed',
+					'Zoom Speed',
 					_react2.default.createElement('input', {
-						onChange: this.handleSpeedChange,
-						value: this.props.speed
+						onChange: this.handleZoomSpeedChange,
+						value: this.props.zoomSpeed
+					})
+				),
+				_react2.default.createElement(
+					'div',
+					null,
+					'Frame Delay',
+					_react2.default.createElement('input', {
+						onChange: this.handleFrameDelayChange,
+						value: this.props.frameDelay
 					})
 				),
 				_react2.default.createElement(
 					'span',
 					{
-						onClick: this.handleRenderClick
+						onClick: this.handleRenderClick,
+						className: 'btn'
 					},
 					'Render'
 				)
@@ -91562,9 +91581,14 @@
 				zoomFrom: e.target.value
 			});
 		},
-		handleSpeedChange: function handleSpeedChange(e) {
+		handleZoomSpeedChange: function handleZoomSpeedChange(e) {
 			this.props.updateGifRenderSettings({
-				speed: e.target.value
+				zoomSpeed: e.target.value
+			});
+		},
+		handleFrameDelayChange: function handleFrameDelayChange(e) {
+			this.props.updateGifRenderSettings({
+				frameDelay: e.target.value
 			});
 		},
 		handleRenderClick: function handleRenderClick() {
@@ -91575,7 +91599,8 @@
 	var mapStateToProps = function mapStateToProps(state) {
 		return {
 			zoomFrom: state.gifRenderSettings.zoomFrom,
-			speed: state.gifRenderSettings.speed
+			zoomSpeed: state.gifRenderSettings.zoomSpeed,
+			frameDelay: state.gifRenderSettings.frameDelay
 		};
 	};
 	
