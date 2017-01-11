@@ -32938,7 +32938,7 @@
 		zoomFrom: '0.5',
 		speed: '0.1',
 		gif: null,
-		datauri: ''
+		objectURL: ''
 	};
 
 /***/ },
@@ -32960,7 +32960,8 @@
 		_workerActions.worker.onmessage = function (e) {
 			if (_typeof(e.data) === 'object') {
 				var action = e.data;
-				var gif = getState().gifRenderSettings.gif;
+				var gifRenderSettings = getState().gifRenderSettings;
+				var gif = gifRenderSettings.gif;
 				if (action.type === 'GIF_RENDER') {
 					gif = gif || new _gif2.default({
 						workers: 2,
@@ -32976,17 +32977,17 @@
 						}
 					});
 				} else if (action.type === 'GIF_END') {
+					// destroy old objectURL
+					if (gifRenderSettings.objectURL) {
+						URL.revokeObjectURL(gifRenderSettings.objectURL);
+					}
 					gif.on('finished', function (blob) {
-						var reader = new FileReader();
-						reader.readAsDataURL(blob);
-						reader.onloadend = function () {
-							dispatch({
-								type: 'UPDATE_GIF_RENDER_SETTINGS',
-								data: {
-									datauri: reader.result
-								}
-							});
-						};
+						dispatch({
+							type: 'UPDATE_GIF_RENDER_SETTINGS',
+							data: {
+								objectURL: URL.createObjectURL(blob)
+							}
+						});
 					});
 					gif.render();
 					dispatch({
@@ -91431,13 +91432,13 @@
 			speed: _react2.default.PropTypes.string,
 			startGifRender: _react2.default.PropTypes.func,
 			updateGifRenderSettings: _react2.default.PropTypes.func,
-			datauri: _react2.default.PropTypes.string
+			objectURL: _react2.default.PropTypes.string
 		},
 		render: function render() {
-			var link = this.props.datauri ? _react2.default.createElement(
+			var link = this.props.objectURL ? _react2.default.createElement(
 				'a',
-				{ href: this.props.datauri, download: 'mandelbrot.gif' },
-				'Download'
+				{ href: this.props.objectURL, target: '_blank', rel: 'noreferrer noopener' },
+				'Link'
 			) : null;
 			return _react2.default.createElement(
 				'div',
@@ -91489,7 +91490,7 @@
 		return {
 			zoomFrom: state.gifRenderSettings.zoomFrom,
 			speed: state.gifRenderSettings.speed,
-			datauri: state.gifRenderSettings.datauri
+			objectURL: state.gifRenderSettings.objectURL
 		};
 	};
 	

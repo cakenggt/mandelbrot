@@ -6,7 +6,8 @@ export default function (dispatch, getState) {
 	worker.onmessage = e => {
 		if (typeof e.data === 'object') {
 			var action = e.data;
-			var gif = getState().gifRenderSettings.gif;
+			var gifRenderSettings = getState().gifRenderSettings;
+			var gif = gifRenderSettings.gif;
 			if (action.type === 'GIF_RENDER') {
 				gif = gif || new GIF({
 					workers: 2,
@@ -22,17 +23,17 @@ export default function (dispatch, getState) {
 					}
 				});
 			} else if (action.type === 'GIF_END') {
+				// destroy old objectURL
+				if (gifRenderSettings.objectURL) {
+					URL.revokeObjectURL(gifRenderSettings.objectURL);
+				}
 				gif.on('finished', blob => {
-					var reader = new FileReader();
-					reader.readAsDataURL(blob);
-					reader.onloadend = function () {
-						dispatch({
-							type: 'UPDATE_GIF_RENDER_SETTINGS',
-							data: {
-								datauri: reader.result
-							}
-						});
-					};
+					dispatch({
+						type: 'UPDATE_GIF_RENDER_SETTINGS',
+						data: {
+							objectURL: URL.createObjectURL(blob)
+						}
+					});
 				});
 				gif.render();
 				dispatch({

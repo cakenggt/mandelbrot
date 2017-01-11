@@ -8,11 +8,11 @@ var GifRenderSettings = React.createClass({
 		speed: React.PropTypes.string,
 		startGifRender: React.PropTypes.func,
 		updateGifRenderSettings: React.PropTypes.func,
-		datauri: React.PropTypes.string
+		objectURL: React.PropTypes.string
 	},
 	render: function () {
-		var link = this.props.datauri ?
-			<a href={this.props.datauri} download="mandelbrot.gif">Download</a> :
+		var link = this.props.objectURL ?
+			<a href={this.props.objectURL} target="_blank" rel="noreferrer noopener">Link</a> :
 			null;
 		return (
 			<div>
@@ -56,7 +56,7 @@ var mapStateToProps = state => {
 	return {
 		zoomFrom: state.gifRenderSettings.zoomFrom,
 		speed: state.gifRenderSettings.speed,
-		datauri: state.gifRenderSettings.datauri
+		objectURL: state.gifRenderSettings.objectURL
 	};
 };
 
