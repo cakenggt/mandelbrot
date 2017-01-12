@@ -10,7 +10,8 @@ var RenderView = React.createClass({
 		zoom: React.PropTypes.number,
 		origin: React.PropTypes.string,
 		navigate: React.PropTypes.func,
-		objectURL: React.PropTypes.string
+		objectURL: React.PropTypes.string,
+		renderedData: React.PropTypes.array
 	},
 	getInitialState: function () {
 		return {
@@ -70,22 +71,26 @@ var RenderView = React.createClass({
 		this.canvas = c;
 	},
 	handleNavigationClick: function (e) {
-		var x = e.pageX - this.canvas.offsetLeft;
-		var y = e.pageY - this.canvas.offsetTop;
-		var diffX = x - (this.props.width / 2);
-		var diffY = (this.props.height / 2) - y;
-		var pixelSize = getPixelSize(this.props.width, this.props.zoom);
-		var origin = math.complex(this.props.origin);
-		var clickLoc = math.add(origin, math.complex(diffX * pixelSize, diffY * pixelSize));
-		this.props.navigate({
-			origin: clickLoc.toString()
-		});
+		if (this.props.renderedData.length > 0) {
+			var x = e.pageX - this.canvas.offsetLeft;
+			var y = e.pageY - this.canvas.offsetTop;
+			var diffX = x - (this.props.width / 2);
+			var diffY = (this.props.height / 2) - y;
+			var pixelSize = getPixelSize(this.props.width, this.props.zoom);
+			var origin = math.complex(this.props.origin);
+			var clickLoc = math.add(origin, math.complex(diffX * pixelSize, diffY * pixelSize));
+			this.props.navigate({
+				origin: clickLoc.toString()
+			});
+		}
 	},
 	handleMouseMove: function (e) {
-		this.setState({
-			mouseX: e.pageX,
-			mouseY: e.pageY
-		});
+		if (this.props.renderedData.length > 0) {
+			this.setState({
+				mouseX: e.pageX,
+				mouseY: e.pageY
+			});
+		}
 	},
 	handleMouseLeave: function () {
 		this.setState({mouseX: null, mouseY: null});
@@ -98,7 +103,8 @@ var mapStateToProps = state => {
 		height: state.worker.height,
 		zoom: state.worker.zoom,
 		origin: state.worker.origin,
-		objectURL: state.gifRenderSettings.objectURL
+		objectURL: state.gifRenderSettings.objectURL,
+		renderedData: state.worker.renderedData
 	};
 };
 

@@ -49,6 +49,11 @@ input {
 	cursor: pointer;
 	user-select: none;
 }
+.btn.inactive {
+	background-color: #999999;
+	color: #bbbbbb;
+	cursor: default;
+}
 .bordered{
 	border: 2px black solid;
 	border-radius: 3px;

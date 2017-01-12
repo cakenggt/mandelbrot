@@ -4,26 +4,27 @@ import {startRender} from '../actionCreators/worker-actions';
 
 var NavigationView = React.createClass({
 	propTypes: {
+		renderOrigin: React.PropTypes.string,
 		origin: React.PropTypes.string,
 		zoom: React.PropTypes.string,
 		updateRenderSettings: React.PropTypes.func,
 		startRender: React.PropTypes.func
 	},
 	render: function () {
+		var setOriginHandler = this.props.origin === this.props.renderOrigin ?
+			null :
+			this.handleSetOriginClick;
+		var setOriginClass = this.props.origin === this.props.renderOrigin ?
+			'btn inactive' :
+			'btn';
 		return (
 			<div>
 				<h2>Navigation</h2>
-				<div>
-					Your clicked origin is:
-				</div>
-				<div>
-					{this.props.origin}
-				</div>
 				<span
-					onClick={this.handleSetOriginClick}
-					className="btn"
+					onClick={setOriginHandler}
+					className={setOriginClass}
 					>
-					Set origin
+					Set clicked origin
 				</span>
 				<div>
 					<span className="btn" onClick={this.handleZoomInClick}>Zoom in</span>
@@ -54,7 +55,8 @@ var NavigationView = React.createClass({
 var mapStateToProps = state => {
 	return {
 		origin: state.navigation.origin,
-		zoom: state.renderSettings.zoom
+		zoom: state.renderSettings.zoom,
+		renderOrigin: state.renderSettings.origin
 	};
 };
 
